@@ -72,17 +72,22 @@ class BooksToScrapeClass():
     
     def parse(self, soup):
 	
-        booksObjectList = []
-
-        for book in soup.find_all("h3"): # interator
+            booksObjectList = []
+            bookList = []
+            titleList = []
+            stockList = []
+            priceList= []
+            ratingList = []
 
             books = soup.find_all("h3")
             for book in books:
                 url = book.find("a").get('href')
+                bookList.append( (url))
             
             products = soup.find_all(class_ = "image_container")
             for product in products:
                 title = product.select('img')[0]['alt']
+                titleList.append( (title))
 
             productData = soup.find_all(class_ = "instock availability")
 
@@ -92,10 +97,12 @@ class BooksToScrapeClass():
                 if "In stock" in x:
                     stock = 1
                 else: stock=0
+                stockList.append((stock))
 
             prices = soup.find_all(class_ = "price_color")
             for price in prices:
                 priceFloatedAndWithoutPoundPrefix = float(price.text[1:]) # [1:] erases pound symbol from price
+                priceList.append((priceFloatedAndWithoutPoundPrefix))
 
             ratings = soup.find_all(class_ = "product_pod")
             for rating in ratings:
@@ -109,9 +116,16 @@ class BooksToScrapeClass():
                 elif r == "Four":numericalRating = 4
                 elif r == "Four":numericalRating = 5
 
-            booksObjectList.append( (url, title, stock, priceFloatedAndWithoutPoundPrefix, numericalRating) )
+                ratingList.append((numericalRating))
 
-        return booksObjectList
+            x = 0
+            for i in bookList:
+                booksObjectList.append((bookList[x], titleList[x], stockList[x], priceList[x], ratingList[x]))
+                x= x+1
+            #it's nasty (for now) but it works
+
+
+            return booksObjectList
 
 
 class BookRepositiryToScrapeClass():
